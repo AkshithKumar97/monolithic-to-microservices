@@ -13,4 +13,6 @@ public interface JobService {
     void deleteJobById(Long id);
 
     void updateJobById(Long id, Job job);
+
+    List<Job> findJobByCompanyId(Long companyId);
 }

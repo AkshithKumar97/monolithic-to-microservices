@@ -1,5 +1,6 @@
 package com.upgrade.companyms.company;
 
+import com.upgrade.companyms.company.dto.CompanyDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,13 +43,12 @@ public class CompanyController {
         }
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<Company> getCompany(@PathVariable Long id){
-        Company company = companyService.getCompanyById(id);
-        if (company != null){
-            return new ResponseEntity<>(company, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("company/{id}")
+    public ResponseEntity<CompanyDTO> getCompany(@PathVariable Long id){
+        CompanyDTO companyDTO = companyService.getCompanyFullDetails(id);
+        if (companyDTO != null){
+            return new ResponseEntity<>(companyDTO,HttpStatus.OK);
         }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

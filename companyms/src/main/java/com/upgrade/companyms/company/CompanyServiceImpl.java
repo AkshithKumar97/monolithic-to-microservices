@@ -1,12 +1,26 @@
 package com.upgrade.companyms.company;
 
+import com.upgrade.companyms.company.clients.JobClient;
+import com.upgrade.companyms.company.clients.ReviewClient;
+import com.upgrade.companyms.company.dto.CompanyDTO;
+import com.upgrade.companyms.company.dto.JobDTO;
+import com.upgrade.companyms.company.dto.ReviewDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CompanyServiceImpl implements CompanyService {
+
     private CompanyRepo companyRepo;
+
+    @Autowired
+    private JobClient jobClient;
+
+    @Autowired
+    private ReviewClient reviewClient;
+
 
     public CompanyServiceImpl(CompanyRepo companyRepo) {
         this.companyRepo = companyRepo;
@@ -46,7 +60,24 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company getCompanyById(Long id) {
-        return companyRepo.findById(id).orElse(null);
+    public CompanyDTO getCompanyFullDetails(Long companyId) {
+
+        Company company = companyRepo.findById(companyId).orElse(null);
+
+        List<JobDTO> jobs = jobClient.jobsByCompId(companyId);
+
+        List<ReviewDTO> reviews = reviewClient.reviewsByCompId(companyId);
+
+        CompanyDTO companyDTO = new CompanyDTO();
+
+        companyDTO.setId(companyId);
+        companyDTO.setName(company.getName());
+        companyDTO.setDescription(company.getDescription());
+
+        companyDTO.setJobs(jobs);
+        companyDTO.setReviews(reviews);
+
+        return companyDTO;
     }
+
 }

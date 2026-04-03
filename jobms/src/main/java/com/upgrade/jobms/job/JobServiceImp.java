@@ -57,5 +57,10 @@ public class JobServiceImp implements JobService {
         }
     }
 
+    @Override
+    public List<Job> findJobByCompanyId(Long companyId){
+        return jobsRepo.findByCompanyId(companyId);
+    }
+
 
 }

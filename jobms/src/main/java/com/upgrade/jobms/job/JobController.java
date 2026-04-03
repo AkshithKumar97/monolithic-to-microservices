@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/jobs")
 public class JobController {
 
     private JobService jobService;
@@ -14,7 +15,7 @@ public class JobController {
         this.jobService = jobService;
     }
 
-    @GetMapping("/jobs")
+    @GetMapping
     public List<Job> findAllJobs(){
         return jobService.findAllJobs();
     }
@@ -26,7 +27,7 @@ public class JobController {
         return ResponseEntity.ok("Job Has Posted Successfully");
     }
 
-    @GetMapping("/jobs/{id}")
+    @GetMapping("/{id}")
     public Job getJobById(@PathVariable Long id){
         return jobService.getJobById(id);
     }
@@ -42,4 +43,11 @@ public class JobController {
         jobService.updateJobById(id,job);
         return ResponseEntity.ok("Details Updated");
     }
+
+    //open feign
+    @GetMapping("/company/{companyId}")
+    public List<Job> CompanyJobsBYId(@PathVariable("companyId") Long companyId){
+        return jobService.findJobByCompanyId(companyId);
+    }
+
 }
