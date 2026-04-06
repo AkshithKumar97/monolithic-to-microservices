@@ -2,7 +2,6 @@ package com.upgrade.jobms.job;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -14,6 +13,9 @@ public class JobController {
     public JobController(JobService jobService) {
         this.jobService = jobService;
     }
+
+    @GetMapping("/test")
+    public String test() { return "works"; }
 
     @GetMapping
     public List<Job> findAllJobs(){
