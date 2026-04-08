@@ -5,7 +5,9 @@ import com.upgrade.companyms.company.clients.ReviewClient;
 import com.upgrade.companyms.company.dto.CompanyDTO;
 import com.upgrade.companyms.company.dto.JobDTO;
 import com.upgrade.companyms.company.dto.ReviewDTO;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +62,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @CircuitBreaker(name = "companyCircuteBreaker", fallbackMethod = "fullDetailsFallBack")
     public CompanyDTO getCompanyFullDetails(Long companyId) {
 
         Company company = companyRepo.findById(companyId).orElse(null);
@@ -78,6 +81,15 @@ public class CompanyServiceImpl implements CompanyService {
         companyDTO.setReviews(reviews);
 
         return companyDTO;
+    }
+
+    public CompanyDTO fullDetailsFallBack(Exception ex){
+
+        CompanyDTO cdto = new CompanyDTO();
+        cdto.setName("Service Unavailable");
+        cdto.setDescription("we are facing some issues, pleas try again later");
+
+        return cdto;
     }
 
 }
