@@ -6,6 +6,7 @@ import com.upgrade.companyms.company.dto.CompanyDTO;
 import com.upgrade.companyms.company.dto.JobDTO;
 import com.upgrade.companyms.company.dto.ReviewDTO;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @CircuitBreaker(name = "companyCircuteBreaker", fallbackMethod = "fullDetailsFallBack")
+    @RateLimiter(name = "companyCircuteBreaker", fallbackMethod = "fullDetailsFallBack")
     public CompanyDTO getCompanyFullDetails(Long companyId) {
 
         Company company = companyRepo.findById(companyId).orElse(null);
