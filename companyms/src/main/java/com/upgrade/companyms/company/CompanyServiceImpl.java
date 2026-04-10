@@ -5,8 +5,10 @@ import com.upgrade.companyms.company.clients.ReviewClient;
 import com.upgrade.companyms.company.dto.CompanyDTO;
 import com.upgrade.companyms.company.dto.JobDTO;
 import com.upgrade.companyms.company.dto.ReviewDTO;
+import com.upgrade.companyms.company.dto.ReviewMessage;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import jakarta.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Service;
@@ -25,8 +27,10 @@ public class CompanyServiceImpl implements CompanyService {
     private ReviewClient reviewClient;
 
 
-    public CompanyServiceImpl(CompanyRepo companyRepo) {
+    public CompanyServiceImpl(CompanyRepo companyRepo, JobClient jobClient, ReviewClient reviewClient) {
         this.companyRepo = companyRepo;
+        this.jobClient = jobClient;
+        this.reviewClient = reviewClient;
     }
 
     @Override
@@ -85,6 +89,7 @@ public class CompanyServiceImpl implements CompanyService {
         return companyDTO;
     }
 
+
     public CompanyDTO fullDetailsFallBack(Exception ex){
 
         CompanyDTO cdto = new CompanyDTO();
@@ -93,5 +98,16 @@ public class CompanyServiceImpl implements CompanyService {
 
         return cdto;
     }
+
+
+    @Override
+    public void updateCompanyRating(ReviewMessage reviewMessage) {
+        Company company = companyRepo.findById(reviewMessage.getCompanyId()).orElseThrow(() -> new NotFoundException("Company not found" + reviewMessage.getTitle()));
+
+        Double averageRating = reviewClient.getAverageRatingForCompany(reviewMessage.getCompanyId());
+        company.setRating(averageRating);
+        companyRepo.save(company);
+    }
+
 
 }
